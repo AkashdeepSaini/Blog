@@ -52,7 +52,7 @@ class ArticleSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Article
-        fields = ('title' , 'description', 'created_at','updated_at','author_username','author')
+        fields = ('id','title' , 'description', 'created_at','updated_at','author_username','author')
     
     def get_author_username(self, obj):
         name = Author.objects.get(id = obj.author_id)
