@@ -1,5 +1,5 @@
 from django.core.exceptions import PermissionDenied
-from .models import Author , Article
+from .models import  Article
 
 def relevant_user_required(function):
     """

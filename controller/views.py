@@ -1,6 +1,4 @@
 import jwt
-import traceback
-from django.shortcuts import render
 from django.conf import settings
 from django.http import JsonResponse ,Http404
 from rest_framework.views import APIView
@@ -99,9 +97,14 @@ class ArticleDetail(APIView):
         return Response(serializer.data)
     
     @relevant_user_required
-    def patch(self, request, pk, format=None):
+    def put(self, request, pk, format=None):
         article = self.get_object(pk)
+        
         data = request.data
+        if not data.get("description",""):
+            data['description'] = article.description
+        if not data.get("title",""):
+            data['title'] = article.title
         data['author'] = article.author.id
         serializer = ArticleSerializer(instance = article, data=data)
         if serializer.is_valid(raise_exception=True):
