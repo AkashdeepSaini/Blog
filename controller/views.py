@@ -53,14 +53,9 @@ class UserProfile(APIView):
             }
             
             return JsonResponse(user_data)
-
         except jwt.ExpiredSignatureError:
-    
             return JsonResponse({'error': 'Token has expired'}, status=401)
-
         except (jwt.InvalidTokenError, KeyError, Author.DoesNotExist):
-            
-            traceback.print_exc()
             return JsonResponse({'error': 'Invalid token'}, status=401)
         
 
@@ -78,7 +73,6 @@ class ArticleList(APIView):
     
     
     def post(self, request, format=None):
-        print(request.user , request.data)
         request.data['author']  = request.user.id
         serializer = ArticleSerializer(data=request.data)
         
@@ -105,10 +99,12 @@ class ArticleDetail(APIView):
         return Response(serializer.data)
     
     @relevant_user_required
-    def put(self, request, pk, format=None):
+    def patch(self, request, pk, format=None):
         article = self.get_object(pk)
-        serializer = ArticleSerializer(article, data=request.data)
-        if serializer.is_valid():
+        data = request.data
+        data['author'] = article.author.id
+        serializer = ArticleSerializer(instance = article, data=data)
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
         return Response({"msg":"Article Updated Successfully!"}, status=status.HTTP_400_BAD_REQUEST)
